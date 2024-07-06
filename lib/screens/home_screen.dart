@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
+import 'package:todoapp/config/routes/location_route.dart';
 import 'package:todoapp/data/models/models.dart';
 import 'package:todoapp/utils/task_categories.dart';
 import 'package:todoapp/utils/utils.dart';
@@ -8,7 +10,8 @@ import 'package:todoapp/widgets/widgets.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
+  static HomeScreen builder(BuildContext ctx, GoRouterState state) =>
+      const HomeScreen();
   @override
   Widget build(BuildContext context) {
     final colors = context.colorScheme;
@@ -64,7 +67,7 @@ class HomeScreen extends StatelessWidget {
                             note: "10",
                             date: "July 02 204",
                             time: "20:30",
-                            category: TaskCategory.education,
+                            category: TaskCategory.shopping,
                             isCompleted: true),
                       ],
                     ),
@@ -100,7 +103,9 @@ class HomeScreen extends StatelessWidget {
                   ),
                   const Gap(20),
                   ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        context.push(RouteLocation.createTask);
+                      },
                       child: const DisplayWhiteText(
                           text: "ADD NEW TASK",
                           fontSize: 10,

@@ -23,13 +23,25 @@ class Displaylistoftask extends StatelessWidget {
           : ListView.separated(
               shrinkWrap: true,
               itemCount: tasks.length,
-            
               itemBuilder: (ctx, indx) {
                 final task = tasks[indx];
-                return TaskTile(task:task);
-              }, separatorBuilder: (BuildContext context, int index) { 
-                return Divider(thickness: 1.5,);
-               },),
+                return InkWell(
+                  child: TaskTile(task: task),
+                  onTap: () async {
+                    await showModalBottomSheet(
+                        context: context,
+                        builder: (ctx) {
+                          return TaskDetail(task: task);
+                        });
+                  },
+                );
+              },
+              separatorBuilder: (BuildContext context, int index) {
+                return Divider(
+                  thickness: 1.5,
+                );
+              },
+            ),
     );
   }
 }
