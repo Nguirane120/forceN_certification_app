@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:todoapp/config/routes/location_route.dart';
 import 'package:todoapp/data/models/models.dart';
+import 'package:todoapp/providrs/providers.dart';
 import 'package:todoapp/utils/task_categories.dart';
 import 'package:todoapp/utils/utils.dart';
 import 'package:todoapp/widgets/DisplayListOfTask.dart';
 import 'package:todoapp/widgets/widgets.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
   static HomeScreen builder(BuildContext ctx, GoRouterState state) =>
       const HomeScreen();
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colorScheme;
     final deviceSize = context.deviceSize;
+    final taskState = ref.watch(taskProvider);
+    
     return Scaffold(
         body: Stack(
       children: [
@@ -51,25 +55,7 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   CommonCaontainer(
                     width: deviceSize.width,
-                    child: const Displaylistoftask(
-                      tasks: [
-                        Task(
-                            id: 1,
-                            title: "gym",
-                            note: "10",
-                            date: "July 02 204",
-                            time: "20:30",
-                            category: TaskCategory.education,
-                            isCompleted: true),
-                        Task(
-                            id: 2,
-                            title: "coding",
-                            note: "10",
-                            date: "July 02 204",
-                            time: "20:30",
-                            category: TaskCategory.shopping,
-                            isCompleted: true),
-                      ],
+                    child: Displaylistoftask(tasks: taskState.tasks
                     ),
                   ),
                   const Gap(20),

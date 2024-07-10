@@ -1,9 +1,8 @@
-import 'dart:async';
 
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:sqflite/sqlite_api.dart';
-import 'package:todoapp/data/models/models.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:todoapp/data/models/task.dart';
 import 'package:todoapp/utils/app_keys.dart';
 import 'package:todoapp/utils/task_keys.dart';
 
@@ -24,6 +23,8 @@ class TaskDatasource {
   }
 
   Future<Database> _initDb() async {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'tasks.db');
 
@@ -34,9 +35,8 @@ class TaskDatasource {
     );
   }
 
-  FutureOr<void> _onCreate(Database db, int version) {
-    void _onCreate(Database db, int version) async {
-      await db.execute('''
+  void _onCreate(Database db, int version) async {
+    await db.execute('''
       CREATE TABLE ${AppKeys.dbTable} (
         ${TaskKeys.id} INTEGER PRIMARY KEY AUTOINCREMENT,
         ${TaskKeys.title} TEXT,
@@ -47,7 +47,6 @@ class TaskDatasource {
         ${TaskKeys.isCompleted} INTEGER
       )
     ''');
-    }
   }
 
   Future<int> addTask(Task task) async {
