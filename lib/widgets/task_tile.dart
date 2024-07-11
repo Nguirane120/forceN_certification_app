@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:todoapp/data/models/models.dart';
+import 'package:todoapp/providrs/providers.dart';
+import 'package:todoapp/utils/utils.dart';
 
-class TaskTile extends StatelessWidget {
+class TaskTile extends ConsumerWidget {
   const TaskTile({super.key, required this.task});
   final Task task;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
                     padding: EdgeInsets.only(left: 10, top: 10),
                   child: Row(
@@ -31,7 +34,17 @@ class TaskTile extends StatelessWidget {
                           ],
                         ),
                       ),
-                      Checkbox(value: task.isCompleted, onChanged: (value) {})
+          Checkbox(
+              value: task.isCompleted,
+              onChanged: (value) async {
+                await ref
+                    .read(taskProvider.notifier)
+                    .updateTask(task)
+                    .then((value) {
+                  AppAlerts.displayMessaet(context,
+                      task.isCompleted ? "Task Completed" : "Task Uncompleted");
+                });
+              })
                     ],
                   ),
                 );

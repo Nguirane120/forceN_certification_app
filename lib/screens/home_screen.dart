@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:todoapp/config/routes/location_route.dart';
 import 'package:todoapp/data/models/models.dart';
 import 'package:todoapp/providrs/providers.dart';
@@ -19,7 +20,10 @@ class HomeScreen extends ConsumerWidget {
     final colors = context.colorScheme;
     final deviceSize = context.deviceSize;
     final taskState = ref.watch(taskProvider);
-    
+    final inCompletedTasks = _incompltedTask(taskState.tasks, ref);
+    final completedTasks = _compltedTask(taskState.tasks, ref);
+
+    final date = ref.watch(dateProvider);
     return Scaffold(
         body: Stack(
       children: [
@@ -30,14 +34,19 @@ class HomeScreen extends ConsumerWidget {
               width: double.infinity,
               height: 200,
               color: context.colorScheme.primary,
-              child: const Column(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Gap(30),
-                  DisplayWhiteText(
-                      text: "JULY 02 2024",
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold),
+                  InkWell(
+                    onTap: () {
+                      Helpers.selecDate(context, ref);
+                    },
+                    child: DisplayWhiteText(
+                        text: DateFormat.yMMMd().format(date),
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
+                  ),
                   Gap(30),
                   DisplayWhiteText(
                       text: "TODO LIST APP",
@@ -55,7 +64,7 @@ class HomeScreen extends ConsumerWidget {
                 children: [
                   CommonCaontainer(
                     width: deviceSize.width,
-                    child: Displaylistoftask(tasks: taskState.tasks
+                    child: Displaylistoftask(tasks: inCompletedTasks
                     ),
                   ),
                   const Gap(20),
@@ -66,26 +75,9 @@ class HomeScreen extends ConsumerWidget {
                     decoration: BoxDecoration(
                       color: colors.primaryContainer,
                     ),
-                    // child: Displaylistoftask(
-                    //   tasks: [
-                    //     Task(
-                    //         id: 1,
-                    //         title: "gym",
-                    //         note: "10",
-                    //         date: "July 02 204",
-                    //         time: "20:30",
-                    //         category: TaskCategory.education,
-                    //         isCompleted: true),
-                    //     Task(
-                    //         id: 2,
-                    //         title: "coding",
-                    //         note: "10",
-                    //         date: "July 02 204",
-                    //         time: "20:30",
-                    //         category: TaskCategory.education,
-                    //         isCompleted: true),
-                    //   ],
-                    // ),
+                    child: Displaylistoftask(
+                      tasks: completedTasks,
+                    ),
                   ),
                   const Gap(20),
                   ElevatedButton(
@@ -103,5 +95,50 @@ class HomeScreen extends ConsumerWidget {
         )
       ],
     ));
+  }
+
+
+
+
+
+  List<Task> _incompltedTask(List<Task> tasks, WidgetRef ref) {
+    final date = ref.watch(dateProvider);
+    final List<Task> filteredTask = [];
+
+    for (var task in tasks) {
+      if (!task.isCompleted) {
+        final isTaskDay = Helpers.isTaskFromSelectedDate(task, date);
+        if (isTaskDay) {
+          filteredTask.add(task);
+        }
+      }
+    }
+    return filteredTask;
+  }
+
+  List<Task> _completeTask(List<Task> tasks) {
+    final List<Task> filteredTask = [];
+    for (var task in tasks) {
+      if (task.isCompleted) {
+        filteredTask.add(task);
+      }
+    }
+
+    return filteredTask;
+  }
+
+  List<Task> _compltedTask(List<Task> tasks, WidgetRef ref) {
+    final date = ref.watch(dateProvider);
+    final List<Task> filteredTask = [];
+
+    for (var task in tasks) {
+      if (task.isCompleted) {
+        final isTaskDay = Helpers.isTaskFromSelectedDate(task, date);
+        if (isTaskDay) {
+          filteredTask.add(task);
+        }
+      }
+    }
+    return filteredTask;
   }
 }
