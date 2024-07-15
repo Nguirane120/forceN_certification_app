@@ -14,9 +14,15 @@ import 'package:todoapp/widgets/select_categories.dart';
 import 'package:todoapp/widgets/selecte_date_time.dart';
 
 class CreateTask extends ConsumerStatefulWidget {
-  const CreateTask({super.key});
-  static CreateTask builder(BuildContext ctx, GoRouterState state) =>
-      const CreateTask();
+  final Task? task;
+
+  const CreateTask(
+      {super.key, this.task}); // Utiliser le constructeur nommé ici
+
+  static CreateTask builder(BuildContext ctx, GoRouterState state) {
+    final task = state.extra as Task?;
+    return CreateTask(task: task); // Passer l'objet task ici
+  }
 
   @override
   ConsumerState<CreateTask> createState() => _CreateTaskState();
@@ -25,6 +31,22 @@ class CreateTask extends ConsumerStatefulWidget {
 class _CreateTaskState extends ConsumerState<CreateTask> {
   TextEditingController _titleController = TextEditingController();
   TextEditingController _noteController = TextEditingController();
+  bool isEdit = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController = TextEditingController();
+    _noteController = TextEditingController();
+    final task = widget.task;
+    if (task != null) {
+      isEdit = true;
+      _titleController.text = task.title;
+      _noteController.text = task.note;
+      // ref.read(taskProvider.notifier).setTask(task);
+    }
+  }
+
   @override
   void dispose() {
     _titleController.dispose();
@@ -36,7 +58,15 @@ class _CreateTaskState extends ConsumerState<CreateTask> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const DisplayWhiteText(text: "ADD NEW TASK"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              context.go(RouteLocation.home);
+            },
+          ),
+        ],
+        title: Text(isEdit ? 'Edit Task' : 'Create Task'),
       ),
       body: SingleChildScrollView(
         physics: AlwaysScrollableScrollPhysics(),
@@ -59,7 +89,9 @@ class _CreateTaskState extends ConsumerState<CreateTask> {
             ),
             Gap(10),
             ElevatedButton(
-                onPressed: _create, child: DisplayWhiteText(text: "SAVE"))
+              onPressed: _create,
+              child: Text(isEdit ? 'Update' : 'Create'),
+            )
           ],
         ),
       ),
@@ -74,19 +106,51 @@ class _CreateTaskState extends ConsumerState<CreateTask> {
     final category = ref.watch(categoryProvider);
 
     if (title.isNotEmpty) {
-      final task = Task(
+      if (isEdit) {
+        final updatedTask = Task(
+          id: widget.task!.id,
           title: title,
           category: category,
           time: Helpers.timeToString(time),
           date: DateFormat.yMMMd().format(date),
           note: note,
-          isCompleted: false);
-      await ref.read(taskProvider.notifier).createTask(task).then((value) {
-        AppAlerts.displayMessaet(context, "Task ajoute avec succee");
+          isCompleted:
+              widget.task!.isCompleted, // Conservez l'état complet existant
+        );
+
+        await ref
+            .read(taskProvider.notifier)
+            .updateTask(updatedTask)
+            .then((value) {
+          AppAlerts.displayMessaet(context, "Task mis à jour avec succès");
+          context.go(RouteLocation.home);
+        }).catchError((error) {
+          AppAlerts.displayMessaet(
+              context, "Erreur lors de la mise à jour de la tâche");
+        });
+      } else {
+        // Si c'est une création
+        final newTask = Task(
+          title: title,
+          category: category,
+          time: Helpers.timeToString(time),
+          date: DateFormat.yMMMd().format(date),
+          note: note,
+          isCompleted:
+              false, // Nouvelle tâche, donc marquée comme non complétée
+        );
+
+        await ref.read(taskProvider.notifier).createTask(newTask).then((value) {
+          AppAlerts.displayMessaet(context, "Task ajouté avec succès");
         context.go(RouteLocation.home);
+        }).catchError((error) {
+          AppAlerts.displayMessaet(
+              context, "Erreur lors de l'ajout de la tâche");
       });
+      }
     } else {
       AppAlerts.displayMessaet(context, "Veuillez remplir le titre");
     }
   }
+
 }

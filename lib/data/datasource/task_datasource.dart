@@ -1,4 +1,5 @@
 
+import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -60,7 +61,8 @@ class TaskDatasource {
     });
   }
 
-  Future<List<Task>> getAllTasks() async {
+Future<List<Task>> getAllTasks() async {
+    try {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(
       AppKeys.dbTable,
@@ -72,7 +74,12 @@ class TaskDatasource {
         return Task.fromJson(maps[index]);
       },
     );
-  }
+    } catch (e) {
+      debugPrint("Error fetching tasks: $e");
+      throw e; // Propagate the error upwards if needed
+    }
+}
+
 
   Future<int> updateTask(Task task) async {
     final db = await database;
