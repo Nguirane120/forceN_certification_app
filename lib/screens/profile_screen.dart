@@ -49,7 +49,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
             children: [
               const CircleAvatar(
                 radius: 70,
-                backgroundImage: NetworkImage(''),
+                // backgroundImage: NetworkImage(''),
               ),
               const Gap(10),
               TabBar(

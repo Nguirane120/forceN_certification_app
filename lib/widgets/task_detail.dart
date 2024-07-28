@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:todoapp/data/models/models.dart';
+import 'package:todoapp/providrs/task/task_provider.dart';
+import 'package:todoapp/utils/app_alerts.dart';
 
-class TaskDetail extends StatelessWidget {
+class TaskDetail extends ConsumerWidget {
   const TaskDetail({super.key, required this.task});
   final Task task;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: EdgeInsets.all(30),
       child: Column(
@@ -20,6 +23,18 @@ class TaskDetail extends StatelessWidget {
             task.title,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
+          Checkbox(
+              value: task.isCompleted,
+              onChanged: (value) async {
+                await ref
+                    .read(taskProvider.notifier)
+                    .updateTask(task)
+                    .then((value) {
+                  Navigator.of(context).pop();
+                  AppAlerts.displayMessaet(context,
+                      task.isCompleted ? "Task Completed" : "Task Uncompleted");
+                });
+              }),
           Gap(10),
           Visibility(
             visible: task.isCompleted ?? false,

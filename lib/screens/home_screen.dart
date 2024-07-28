@@ -15,10 +15,11 @@ class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
   static HomeScreen builder(BuildContext ctx, GoRouterState state) =>
       const HomeScreen();
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colors = context.colorScheme;
-    final deviceSize = context.deviceSize;
+    final colors = Theme.of(context).colorScheme;
+    final deviceSize = MediaQuery.of(context).size;
     final taskState = ref.watch(taskProvider);
     print(taskState.tasks.length);
     final inCompletedTasks = _incompltedTask(taskState.tasks, ref);
@@ -34,7 +35,7 @@ class HomeScreen extends ConsumerWidget {
               CommonCaontainer(
                 width: double.infinity,
                 height: 200,
-                color: context.colorScheme.primary,
+                color: colors.primary,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -56,43 +57,44 @@ class HomeScreen extends ConsumerWidget {
                   ],
                 ),
               ),
-              Positioned(
-                  child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CommonCaontainer(
-                      width: deviceSize.width,
-                      child: Displaylistoftask(tasks: taskState.tasks),
-                    ),
-                    const Gap(20),
-                    const Text("completed"),
-                    const Gap(20),
-                    Container(
-                      width: deviceSize.width,
-                      decoration: BoxDecoration(
-                        color: colors.primaryContainer,
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CommonCaontainer(
+                        width: deviceSize.width,
+                        child: Displaylistoftask(tasks: inCompletedTasks),
                       ),
-                      // child: Displaylistoftask(
-                      //   tasks: completedTasks,
-                      // ),
-                    ),
-                    const Gap(20),
-                    ElevatedButton(
-                        onPressed: () {
-                          context.push(RouteLocation.createTask);
-                        },
-                        child: const DisplayWhiteText(
-                            text: "ADD NEW TASK",
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold))
-                  ],
+                      const Gap(20),
+                      const Text("Completed"),
+                      const Gap(20),
+                      Container(
+                        width: deviceSize.width,
+                        decoration: BoxDecoration(
+                          color: colors.primaryContainer,
+                        ),
+                        child: Displaylistoftask(
+                          tasks: completedTasks,
+                        ),
+                      ),
+                      const Gap(20),
+                      ElevatedButton(
+                          onPressed: () {
+                            context.push(RouteLocation.createTask);
+                          },
+                          child: const DisplayWhiteText(
+                              text: "ADD NEW TASK",
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold))
+                    ],
+                  ),
                 ),
-              ))
+              )
             ],
-          )
+          ),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -119,17 +121,6 @@ class HomeScreen extends ConsumerWidget {
         }
       }
     }
-    return filteredTask;
-  }
-
-  List<Task> _completeTask(List<Task> tasks) {
-    final List<Task> filteredTask = [];
-    for (var task in tasks) {
-      if (task.isCompleted) {
-        filteredTask.add(task);
-      }
-    }
-
     return filteredTask;
   }
 

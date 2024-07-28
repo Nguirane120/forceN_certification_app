@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+// import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:todoapp/data/models/task.dart';
 import 'package:todoapp/utils/app_keys.dart';
 import 'package:todoapp/utils/task_keys.dart';
@@ -24,8 +24,8 @@ class TaskDatasource {
   }
 
   Future<Database> _initDb() async {
-    sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi;
+    // sqfliteFfiInit();
+    // databaseFactory = databaseFactoryFfi;
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'tasks.db');
 
