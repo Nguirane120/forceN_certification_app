@@ -5,6 +5,7 @@ import 'package:todoapp/config/routes/routes.dart';
 import 'package:todoapp/data/models/task.dart';
 import 'package:todoapp/screens/create_task.dart';
 import 'package:todoapp/screens/home_screen.dart';
+import 'package:todoapp/screens/login_screen.dart';
 import 'package:todoapp/screens/screens.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -39,6 +40,14 @@ final routesProvider = Provider<GoRouter>(
             pageBuilder: (BuildContext context, GoRouterState state) =>
                 const MaterialPage(
               child: ProfileWidget(),
+            ),
+          ),
+          GoRoute(
+            // name: RouteLocation.createTask,
+            path: RouteLocation.login,
+            pageBuilder: (BuildContext context, GoRouterState state) =>
+                const MaterialPage(
+              child: LoginScreen(),
             ),
           ),
         ]);

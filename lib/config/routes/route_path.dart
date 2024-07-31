@@ -5,6 +5,7 @@ import 'package:todoapp/config/routes/routes.dart';
 import 'package:todoapp/data/models/task.dart';
 import 'package:todoapp/screens/create_task.dart';
 import 'package:todoapp/screens/home_screen.dart';
+import 'package:todoapp/screens/login_screen.dart';
 import 'package:todoapp/screens/screens.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -19,6 +20,11 @@ final appRoutes = [
     path: RouteLocation.createTask,
     parentNavigatorKey: _rootNavigatorKey,
     builder: CreateTask.builder,
+  ),
+  GoRoute(
+    path: RouteLocation.login,
+    parentNavigatorKey: _rootNavigatorKey,
+    builder: LoginScreen.builder,
   ),
   GoRoute(
     path: RouteLocation.createTask,

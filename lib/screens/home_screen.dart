@@ -21,12 +21,21 @@ class HomeScreen extends ConsumerWidget {
     final colors = Theme.of(context).colorScheme;
     final deviceSize = MediaQuery.of(context).size;
     final taskState = ref.watch(taskProvider);
-    print(taskState.tasks.length);
+    // print(taskState.tasks.length);
     final inCompletedTasks = _incompltedTask(taskState.tasks, ref);
     final completedTasks = _compltedTask(taskState.tasks, ref);
 
     final date = ref.watch(dateProvider);
     return Scaffold(
+      appBar: AppBar(title: const Text('Todo App'), actions: [
+        IconButton(
+          icon: Icon(Icons.logout),
+          onPressed: () {
+            // ref.read(dateProvider.notifier).changeDate();
+            context.push(RouteLocation.login);
+          },
+        )
+      ]),
       body: Stack(
         children: [
           Column(
