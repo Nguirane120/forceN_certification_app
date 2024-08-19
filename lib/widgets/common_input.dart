@@ -8,7 +8,8 @@ class CommonInput extends StatelessWidget {
       this.controller,
       this.maxLine,
       this.suffixIcon,
-      this.readOnly = false});
+      this.readOnly = false,
+      this.obscureText});
 
   final String title;
   final String hint;
@@ -16,6 +17,7 @@ class CommonInput extends StatelessWidget {
   final int? maxLine;
   final Widget? suffixIcon;
   final bool readOnly;
+  final bool? obscureText;
 
   @override
   Widget build(BuildContext context) {
@@ -26,11 +28,15 @@ class CommonInput extends StatelessWidget {
         TextField(
           readOnly: readOnly,
           maxLength: maxLine,
+          obscureText: obscureText ?? false,
           onEditingComplete: () {
             FocusManager.instance.primaryFocus?.unfocus();
           },
           controller: controller,
-          decoration: InputDecoration(hintText: hint, suffix: suffixIcon),
+          decoration: InputDecoration(
+            hintText: hint,
+            suffix: suffixIcon,
+          ),
         )
       ],
     );

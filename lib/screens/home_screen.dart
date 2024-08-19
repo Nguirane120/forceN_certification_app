@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:todoapp/config/routes/location_route.dart';
 import 'package:todoapp/data/models/models.dart';
+import 'package:todoapp/providrs/auth/firebase_auth.dart';
 import 'package:todoapp/providrs/providers.dart';
 import 'package:todoapp/utils/task_categories.dart';
 import 'package:todoapp/utils/utils.dart';
@@ -21,6 +22,7 @@ class HomeScreen extends ConsumerWidget {
     final colors = Theme.of(context).colorScheme;
     final deviceSize = MediaQuery.of(context).size;
     final taskState = ref.watch(taskProvider);
+    ref.read(signOutProvider);
     // print(taskState.tasks.length);
     final inCompletedTasks = _incompltedTask(taskState.tasks, ref);
     final completedTasks = _compltedTask(taskState.tasks, ref);
@@ -30,9 +32,21 @@ class HomeScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text('Todo App'), actions: [
         IconButton(
           icon: Icon(Icons.logout),
-          onPressed: () {
-            // ref.read(dateProvider.notifier).changeDate();
-            context.push(RouteLocation.login);
+          onPressed: () async {
+            try {
+              // Appeler le provider de déconnexion
+              await ref.read(signOutProvider.future);
+
+              // Rediriger l'utilisateur après déconnexion réussie
+              GoRouter.of(context).go('/login');
+            } catch (e) {
+              // Gérer les erreurs de déconnexion, par exemple en affichant un message à l'utilisateur
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                    content: Text(
+                        'Erreur lors de la déconnexion : ${e.toString()}')),
+              );
+            }
           },
         )
       ]),

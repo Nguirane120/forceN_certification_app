@@ -14,7 +14,10 @@ class TodoApp extends ConsumerWidget {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      routerConfig: routerconfig,
+      // routerConfig: routerconfig,
+      routerDelegate: routerconfig.routerDelegate,
+      routeInformationParser: routerconfig.routeInformationParser,
+      routeInformationProvider: routerconfig.routeInformationProvider,
     );
   }
 }
