@@ -8,4 +8,5 @@ class RouteLocation {
   static String get createTask => '/createTask';
   static String get profile => '/profile';
   static String get login => '/login';
+  static String get register => '/register';
 }

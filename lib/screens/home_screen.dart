@@ -34,13 +34,11 @@ class HomeScreen extends ConsumerWidget {
           icon: Icon(Icons.logout),
           onPressed: () async {
             try {
-              // Appeler le provider de déconnexion
+           
               await ref.read(signOutProvider.future);
-
-              // Rediriger l'utilisateur après déconnexion réussie
+              
               GoRouter.of(context).go('/login');
             } catch (e) {
-              // Gérer les erreurs de déconnexion, par exemple en affichant un message à l'utilisateur
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                     content: Text(

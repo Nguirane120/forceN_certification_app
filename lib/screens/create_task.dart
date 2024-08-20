@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -5,7 +6,12 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:todoapp/config/routes/location_route.dart';
+import 'package:todoapp/data/datasource/firebase_auth.dart';
+import 'package:todoapp/data/models/firestore_models.dart';
 import 'package:todoapp/data/models/models.dart';
+import 'package:todoapp/data/repositories/taskfire_repo.dart';
+import 'package:todoapp/providrs/auth/firebase_auth.dart';
+import 'package:todoapp/providrs/firestre_task/fire_store.dart';
 import 'package:todoapp/providrs/providers.dart';
 import 'package:todoapp/utils/utils.dart';
 import 'package:todoapp/widgets/common_input.dart';
@@ -104,6 +110,10 @@ class _CreateTaskState extends ConsumerState<CreateTask> {
     final date = ref.watch(dateProvider);
     final time = ref.watch(timeProvider);
     final category = ref.watch(categoryProvider);
+    final isConnected =
+        await Connectivity().checkConnectivity() != ConnectivityResult.none;
+    final user = ref.watch(authStateProvider);
+
 
     if (title.isNotEmpty) {
       if (isEdit) {
@@ -129,6 +139,21 @@ class _CreateTaskState extends ConsumerState<CreateTask> {
               context, "Erreur lors de la mise à jour de la tâche");
         });
       } else {
+        if (isConnected) {
+          final firestore_task = FirestoreTask(
+            title: title,
+            category: category,
+            time: Helpers.timeToString(time),
+            date: DateFormat.yMMMd().format(date),
+            note: note,
+            isCompleted: false,
+            userId: user.value!.uid,
+          );
+          final firestoreTaskRepository =
+              ref.read(firebaseTaskRepositoryProvider);
+
+          await firestoreTaskRepository.addTask(firestore_task);
+        }
         // Si c'est une création
         final newTask = Task(
           title: title,
@@ -142,15 +167,14 @@ class _CreateTaskState extends ConsumerState<CreateTask> {
 
         await ref.read(taskProvider.notifier).createTask(newTask).then((value) {
           AppAlerts.displayMessaet(context, "Task ajouté avec succès");
-        context.go(RouteLocation.home);
+          context.go(RouteLocation.home);
         }).catchError((error) {
           AppAlerts.displayMessaet(
               context, "Erreur lors de l'ajout de la tâche");
-      });
+        });
       }
     } else {
       AppAlerts.displayMessaet(context, "Veuillez remplir le titre");
     }
   }
-
 }

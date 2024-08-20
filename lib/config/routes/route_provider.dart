@@ -7,6 +7,7 @@ import 'package:todoapp/providrs/auth/firebase_auth.dart';
 import 'package:todoapp/screens/create_task.dart';
 import 'package:todoapp/screens/home_screen.dart';
 import 'package:todoapp/screens/login_screen.dart';
+import 'package:todoapp/screens/register_screen.dart';
 import 'package:todoapp/screens/screens.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -52,15 +53,25 @@ final routesProvider = Provider<GoRouter>(
             child: LoginScreen(),
           ),
         ),
+        GoRoute(
+          // name: RouteLocation.createTask,
+          path: RouteLocation.register,
+          pageBuilder: (BuildContext context, GoRouterState state) =>
+              const MaterialPage(
+            child: RegisterScreen(),
+          ),
+        ),
       ],
       redirect: (context, state) {
-        final isLoggedIn = asyncAuthState.asData?.value != null;
-        if (!isLoggedIn && state.namedLocation('/') != RouteLocation.home) {
-          return '/login';
-        }
-        if (isLoggedIn && state.namedLocation('/login') == '/login') {
-          return '/';
-        }
+        // final isLoggedIn = asyncAuthState.asData?.value != null;
+        // if (!isLoggedIn &&
+        //     state.namedLocation(RouteLocation.home) != RouteLocation.home) {
+        //   return RouteLocation.login;
+        // }
+        // if (isLoggedIn &&
+        //     state.namedLocation(RouteLocation.login) == RouteLocation.login) {
+        //   return RouteLocation.home;
+        // }
         return null;
       },
     );

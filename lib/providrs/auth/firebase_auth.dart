@@ -23,6 +23,19 @@ final signInProvider =
     throw e; // Propager l'erreur pour la gestion dans l'UI
   }
 });
+final signUpProvider =
+    FutureProvider.autoDispose.family<User?, SignInParams>((ref, params) async {
+  try {
+    final userCredential =
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: params.email,
+      password: params.password,
+    );
+    return userCredential.user;
+  } catch (e) {
+    throw e; // Propager l'erreur pour la gestion dans l'UI
+  }
+});
 
 final signOutProvider = FutureProvider<void>((ref) async {
   final auth = ref.read(firebaseAuthProvider);

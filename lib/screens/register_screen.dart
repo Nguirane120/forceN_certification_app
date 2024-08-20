@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:todoapp/config/routes/location_route.dart';
@@ -8,27 +7,27 @@ import 'package:todoapp/data/models/sign.dart';
 import 'package:todoapp/providrs/auth/firebase_auth.dart';
 import 'package:todoapp/widgets/common_input.dart';
 
-class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
-  static LoginScreen builder(BuildContext ctx, GoRouterState state) =>
-      const LoginScreen();
+class RegisterScreen extends ConsumerStatefulWidget {
+  const RegisterScreen({super.key});
+  static RegisterScreen builder(BuildContext ctx, GoRouterState state) =>
+      const RegisterScreen();
   @override
-  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void _signIn() async {
+  void _signUp() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
     final signInParams = SignInParams(email: email, password: password);
 
-    final result = await ref.read(signInProvider(signInParams).future);
+    final result = await ref.read(signUpProvider(signInParams).future);
     if (result != null) {
-      GoRouter.of(context).go('/'); 
+      GoRouter.of(context).go(RouteLocation.login);
     }
   }
 
@@ -44,6 +43,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             //   "assets/images/login.svg",
             //   width: 170,
             // ),
+            Text("INSCRPTION"),
             CommonInput(
               title: "Email",
               hint: "Email",
@@ -60,23 +60,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             Container(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: _signIn,
-                child: const Text('Login'),
+                onPressed: _signUp,
+                child: const Text('Register'),
               ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                const Text("vous n'avez pas de compte ? "),
+                const Text("vous avez deja un compte ? "),
                 TextButton(
-                  child: Text("Inscrivez-vous ici"),
+                  child: Text("Connectez-vous"),
                   onPressed: () {
-                    GoRouter.of(context).go(RouteLocation.register);
+                    GoRouter.of(context).go(RouteLocation.login);
                   },
                 )
               ],
             )
-            
           ],
         ),
       ),
